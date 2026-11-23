@@ -100,11 +100,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\view\Form1.cs">
+    <Compile Include="model\WeatherRepository.cs" />
+    <Compile Include="src\controller\WeatherController.cs" />
+    <Compile Include="src\view\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\view\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="src\view\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="src\model\DbConnection.cs" />
     <Compile Include="Program.cs" />
@@ -115,8 +117,8 @@
     <Compile Include="src\view\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="src\view\Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="src\view\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -144,10 +146,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="model\" />
-    <Folder Include="src\controller\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="data\db.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

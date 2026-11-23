@@ -1,12 +1,13 @@
-﻿using Npgsql;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Net.Http;
 using System.Windows.Forms;
+using WeatherApp.controller;
 using WeatherApp.model;
-
+using WeatherApp.controller;
 namespace WeatherApp
 {
     public partial class Form1 : Form
@@ -146,94 +147,16 @@ namespace WeatherApp
 
         private void btnCurrentWeather_Click(object sender, EventArgs e)
         {
-            DbConnection db = new DbConnection();
-            int updatedCount = 0;
-            Random rnd = new Random();
-
             try
             {
-                using (NpgsqlConnection conn = db.GetConnection())
-                {
-                    conn.Open();
-                    var cities = new List<(int id, string name)>();
-                    using (var cmd = new NpgsqlCommand("SELECT id, name FROM cities", conn))
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read()) cities.Add((reader.GetInt32(0), reader.GetString(1)));
-                    }
-
-                    foreach (var city in cities)
-                    {
-                        // Генерируем показатели
-                        double temp = Math.Round(rnd.NextDouble() * 30 - 5, 1);
-                        double wind = Math.Round(rnd.NextDouble() * 10, 1);
-                        int windDir = rnd.Next(0, 360);
-                        int humidity = rnd.Next(40, 95);
-                        int pressure = rnd.Next(730, 770);
-                        int cloudiness = rnd.Next(0, 100);
-                        double precipitation = Math.Round(rnd.NextDouble() * 5, 1);
-                        double visibility = Math.Round(rnd.NextDouble() * 10 + 2, 1);
-
-                        string insertSql = @"
-                    INSERT INTO observations 
-                    (city_id, condition_value_id, source_id, measurement_date, temperature, humidity, pressure, wind_speed, wind_direction, cloudiness, precipitation, visibility) 
-                    VALUES 
-                    (@cityId, 1, 1, NOW(), @temp, @hum, @press, @wind, @windDir, @cloud, @precip, @vis)";
-
-                        using (NpgsqlCommand insertCmd = new NpgsqlCommand(insertSql, conn))
-                        {
-                            insertCmd.Parameters.AddWithValue("@cityId", city.id);
-                            insertCmd.Parameters.AddWithValue("@temp", temp);
-                            insertCmd.Parameters.AddWithValue("@hum", humidity);
-                            insertCmd.Parameters.AddWithValue("@press", pressure);
-                            insertCmd.Parameters.AddWithValue("@wind", wind);
-                            insertCmd.Parameters.AddWithValue("@windDir", windDir);
-                            insertCmd.Parameters.AddWithValue("@cloud", cloudiness);
-                            insertCmd.Parameters.AddWithValue("@precip", precipitation);
-                            insertCmd.Parameters.AddWithValue("@vis", visibility);
-                            insertCmd.ExecuteNonQuery();
-                        }
-                        updatedCount++;
-                    }
-                }
-
-                // Вывод только самых свежих записей
-                using (NpgsqlConnection conn = db.GetConnection())
-                {
-                    conn.Open();
-                    string selectSql = @"
-                SELECT 
-                    o.measurement_date AS ""Дата измерения"",
-                    c.name AS ""Город"",
-                    o.temperature AS ""Температура"",
-                    o.humidity AS ""Влажность"",
-                    o.pressure AS ""Давление"",
-                    o.wind_speed AS ""Ветер"",
-                    o.wind_direction AS ""Направление"",
-                    o.cloudiness AS ""Облачность"",
-                    o.precipitation AS ""Осадки"",
-                    o.visibility AS ""Видимость""
-                FROM observations o
-                JOIN cities c ON o.city_id = c.id
-                WHERE o.measurement_date = (
-                    SELECT MAX(o2.measurement_date) 
-                    FROM observations o2 
-                    WHERE o2.city_id = o.city_id
-                )
-                ORDER BY c.name;";
-
-                    using (NpgsqlCommand cmd = new NpgsqlCommand(selectSql, conn))
-                    using (NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-                        dataGridView2.DataSource = dt;
-                    }
-                }
-
-                MessageBox.Show($"Погода обновлена для {updatedCount} городов!");
+                WeatherController controller = new WeatherController();
+                dataGridView2.DataSource = controller.UpdateAllCitiesWeather();
+                MessageBox.Show("Погода обновлена для всех городов!");
             }
-            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+            }
         }
     }
 }
