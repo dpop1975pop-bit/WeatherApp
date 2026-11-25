@@ -100,6 +100,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="model\WeatherRecord.cs" />
     <Compile Include="model\WeatherRepository.cs" />
     <Compile Include="src\controller\WeatherController.cs" />
     <Compile Include="src\view\MainForm.cs">

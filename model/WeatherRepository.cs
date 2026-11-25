@@ -10,9 +10,8 @@ namespace WeatherApp.model
         private DbConnection db = new DbConnection();
 
         // 1. Запись (ВСЕ параметры на месте)
-        public void AddWeatherRecord(int cityId, double temp, int humidity, int pressure,
-                                     double windSpeed, int windDirection, int cloudiness,
-                                     double precipitation, double visibility)
+        // Теперь принимает один параметр - объект WeatherRecord
+        public void AddWeatherRecord(WeatherRecord record)
         {
             using (NpgsqlConnection conn = db.GetConnection())
             {
@@ -25,15 +24,15 @@ namespace WeatherApp.model
 
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@cityId", cityId);
-                    cmd.Parameters.AddWithValue("@temp", temp);
-                    cmd.Parameters.AddWithValue("@hum", humidity);
-                    cmd.Parameters.AddWithValue("@press", pressure);
-                    cmd.Parameters.AddWithValue("@wind", windSpeed);        // Ветер
-                    cmd.Parameters.AddWithValue("@windDir", windDirection); // Направление
-                    cmd.Parameters.AddWithValue("@cloud", cloudiness);
-                    cmd.Parameters.AddWithValue("@precip", precipitation);
-                    cmd.Parameters.AddWithValue("@vis", visibility);
+                    cmd.Parameters.AddWithValue("@cityId", record.CityId);
+                    cmd.Parameters.AddWithValue("@temp", record.Temperature);
+                    cmd.Parameters.AddWithValue("@hum", record.Humidity);
+                    cmd.Parameters.AddWithValue("@press", record.Pressure);
+                    cmd.Parameters.AddWithValue("@wind", record.WindSpeed);
+                    cmd.Parameters.AddWithValue("@windDir", record.WindDirection);
+                    cmd.Parameters.AddWithValue("@cloud", record.Cloudiness);
+                    cmd.Parameters.AddWithValue("@precip", record.Precipitation);
+                    cmd.Parameters.AddWithValue("@vis", record.Visibility);
                     cmd.ExecuteNonQuery();
                 }
             }

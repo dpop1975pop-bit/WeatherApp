@@ -15,20 +15,25 @@ namespace WeatherApp.controller
 
             foreach (var city in cities)
             {
-                // Генерируем все данные
-                double temp = Math.Round(rnd.NextDouble() * 30 - 5, 1);
-                double wind = Math.Round(rnd.NextDouble() * 10, 1);
-                int windDir = rnd.Next(0, 360);
-                int humidity = rnd.Next(40, 95);
-                int pressure = rnd.Next(730, 770);
-                int cloudiness = rnd.Next(0, 100);
-                double precipitation = Math.Round(rnd.NextDouble() * 5, 1);
-                double visibility = Math.Round(rnd.NextDouble() * 10 + 2, 1);
+                // 1. Создаем объект и заполняем его данными
+                WeatherRecord record = new WeatherRecord
+                {
+                    CityId = city.Id,
+                    Temperature = Math.Round(rnd.NextDouble() * 30 - 5, 1),
+                    WindSpeed = Math.Round(rnd.NextDouble() * 10, 1),
+                    WindDirection = rnd.Next(0, 360),
+                    Humidity = rnd.Next(40, 95),
+                    Pressure = rnd.Next(730, 770),
+                    Cloudiness = rnd.Next(0, 100),
+                    Precipitation = Math.Round(rnd.NextDouble() * 5, 1),
+                    Visibility = Math.Round(rnd.NextDouble() * 10 + 2, 1)
+                };
 
-                // Передаем строго в том же порядке, что и в WeatherRepository!
-                repo.AddWeatherRecord(city.Id, temp, humidity, pressure, wind, windDir, cloudiness, precipitation, visibility);
+                // 2. Передаем объект в репозиторий
+                repo.AddWeatherRecord(record);
             }
 
+            // 3. Возвращаем результат
             return repo.GetAllActualWeather();
         }
     }
